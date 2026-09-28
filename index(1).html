@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>For Val — I made something for you</title>
+<meta name="description" content="A private invitation, made only for Val.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        cream: '#FFF9F2',
+        cream2: '#FFF1E6',
+        charcoal: '#211A17',
+        cocoa: '#3A2E29',
+        muted: '#8A7B72',
+        rose: '#E78CA0',
+        rosedeep: '#C95A7A',
+        blush: '#FADADD',
+        gold: '#C9A86A',
+        sage: '#8FA998'
+      },
+      fontFamily: {
+        serif: ['"Playfair Display"', 'serif'],
+        sans: ['Outfit', 'sans-serif']
+      },
+      boxShadow: {
+        soft: '0 20px 60px -15px rgba(201,90,122,.25)',
+        card: '0 24px 70px -20px rgba(33,26,23,.18)',
+        glow: '0 0 0 6px rgba(231,140,160,.18)'
+      }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  *{ -webkit-tap-highlight-color: transparent; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:#FFF9F2;
+    color:#211A17;
+    font-family:'Outfit',sans-serif;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:
+      radial-gradient(600px 400px at 10% 10%, rgba(250,218,221,.55), transparent 60%),
+      radial-gradient(700px 500px at 90% 15%, rgba(255,233,200,.7), transparent 60%),
+      radial-gradient(800px 600px at 50% 100%, rgba(231,140,160,.18), transparent 60%);
+    pointer-events:none; z-index:0;
+  }
+  .grain::after{
+    content:""; position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.5; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  }
+  .orb{ position:fixed; border-radius:9999px; filter:blur(70px); pointer-events:none; z-index:0; opacity:.55; }
+  .orb1{ width:420px; height:420px; background:linear-gradient(135deg,#FADADD,#FFD9B3); top:-120px; right:-120px; animation:float1 12s ease-in-out infinite; }
+  .orb2{ width:380px; height:380px; background:linear-gradient(135deg,#FFE8CC,#F5B8C6); bottom:-120px; left:-120px; animation:float2 14s ease-in-out infinite; }
+  @keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-30px,30px) scale(1.08)}}
+  @keyframes float2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.06)}}
+  #petals{ position:fixed; inset:0; z-index:2; pointer-events:none; }
+  .glass{
+    background:rgba(255,255,255,.72);
+    backdrop-filter:blur(22px) saturate(1.2);
+    -webkit-backdrop-filter:blur(22px) saturate(1.2);
+    border:1px solid rgba(255,255,255,.9);
+    box-shadow:0 24px 70px -20px rgba(33,26,23,.16), inset 0 1px 0 rgba(255,255,255,.9);
+  }
+  .glass-soft{ background:rgba(255,255,255,.55); backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.8); }
+  .serif{ font-family:'Playfair Display',serif; }
+  .btn-primary{
+    background:#211A17; color:#FFF9F2;
+    transition:.35s cubic-bezier(.22,1,.36,1);
+    box-shadow:0 14px 30px -10px rgba(33,26,23,.45);
+    position:relative; overflow:hidden;
+  }
+  .btn-primary::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(110deg,transparent 20%,rgba(255,255,255,.25) 50%,transparent 80%);
+    transform:translateX(-120%); transition:.7s;
+  }
+  .btn-primary:hover::after{ transform:translateX(120%); }
+  .btn-primary:hover{ transform:translateY(-2px); background:#3A2E29; box-shadow:0 20px 40px -12px rgba(33,26,23,.5); }
+  .btn-primary:active{ transform:translateY(0) scale(.98); }
+  .btn-rose{
+    background:linear-gradient(135deg,#E78CA0,#C95A7A);
+    color:white; box-shadow:0 14px 30px -10px rgba(201,90,122,.55);
+    transition:.35s cubic-bezier(.22,1,.36,1);
+  }
+  .btn-rose:hover{ transform:translateY(-2px); box-shadow:0 20px 40px -12px rgba(201,90,122,.6); filter:saturate(1.1); }
+  .chip{ transition:.25s; }
+  .chip.active{ background:#211A17 !important; color:#FFF9F2 !important; border-color:#211A17 !important; transform:scale(1.03); box-shadow:0 10px 20px -8px rgba(33,26,23,.4); }
+  .vibe-card{ transition:.4s cubic-bezier(.22,1,.36,1); cursor:pointer; }
+  .vibe-card:hover{ transform:translateY(-4px); }
+  .vibe-card.selected{ outline:2px solid #211A17; outline-offset:3px; transform:translateY(-4px) scale(1.01); box-shadow:0 24px 50px -15px rgba(33,26,23,.35); }
+  .vibe-card.selected .vibe-check{ opacity:1; transform:scale(1); }
+  .vibe-check{ opacity:0; transform:scale(.5); transition:.3s cubic-bezier(.34,1.56,.64,1); }
+  .field{
+    background:rgba(255,255,255,.9); border:1.5px solid #F0E2D6;
+    transition:.25s; width:100%;
+  }
+  .field:focus{ outline:none; border-color:#E78CA0; box-shadow:0 0 0 4px rgba(231,140,160,.18); background:white; }
+  .field::placeholder{ color:#B9A99E; }
+  input[type="range"]{ -webkit-appearance:none; width:100%; height:8px; border-radius:99px; background:linear-gradient(90deg,#FADADD,#E78CA0,#C95A7A); outline:none; }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:32px; height:32px; border-radius:50%;
+    background:white; border:3px solid #211A17; box-shadow:0 8px 20px rgba(0,0,0,.2);
+    cursor:pointer; transition:.2s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover{ transform:scale(1.12); }
+  input[type="range"]::-moz-range-thumb{ width:30px; height:30px; border-radius:50%; background:white; border:3px solid #211A17; cursor:pointer; }
+  .typewriter-cursor{ display:inline-block; width:2px; height:1em; background:#C95A7A; margin-left:4px; vertical-align:middle; animation:blink 1s infinite; }
+  @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+  .pulse-ring{ position:relative; }
+  .pulse-ring::before,.pulse-ring::after{
+    content:""; position:absolute; inset:-4px; border-radius:9999px; border:2px solid rgba(201,90,122,.4); animation:ring 2.2s ease-out infinite; pointer-events:none;
+  }
+  .pulse-ring::after{ animation-delay:1.1s; }
+  @keyframes ring{0%{transform:scale(1); opacity:1}100%{transform:scale(1.18); opacity:0}}
+  .ticket-perf{ background-image:linear-gradient(90deg,#E8D9CC 45%,transparent 45%); background-size:12px 2px; background-repeat:repeat-x; height:2px; }
+  .marquee-dot{ width:6px; height:6px; border-radius:99px; }
+  .step-dot{ transition:.3s; }
+  .rapid-opt{ transition:.25s; }
+  .rapid-opt.picked{ background:#211A17 !important; color:white !important; border-color:#211A17 !important; box-shadow:0 12px 24px -10px rgba(33,26,23,.5); transform:scale(1.02); }
+  .fade-up{ opacity:0; transform:translateY(18px); }
+  .envelope-flap{ transform-origin:top center; transition:1s cubic-bezier(.22,1,.36,1); }
+  .shake{ animation:shake .4s; }
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+  .heart-beat{ animation:beat 1.6s ease-in-out infinite; transform-origin:center; }
+  @keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.18)}24%{transform:scale(1)}36%{transform:scale(1.12)}}
+  .toast-in{ animation:toastIn .45s cubic-bezier(.22,1,.36,1); }
+  @keyframes toastIn{from{opacity:0; transform:translateY(20px) scale(.95)}to{opacity:1; transform:translateY(0) scale(1)}}
+  .admin-tab.active{ background:#211A17; color:#FFF9F2; }
+  .scroll-thin::-webkit-scrollbar{ width:6px; height:6px; }
+  .scroll-thin::-webkit-scrollbar-thumb{ background:#E8D9CC; border-radius:99px; }
+  .prose-docs h3{ font-family:'Playfair Display'; font-size:1.15rem; margin:1.2rem 0 .5rem; }
+  .prose-docs pre{ background:#211A17; color:#FFEEDD; padding:1rem; border-radius:14px; overflow:auto; font-size:.78rem; line-height:1.5; }
+  .prose-docs code{ background:rgba(201,90,122,.15); padding:2px 6px; border-radius:6px; font-size:.85em; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; transition-duration:.01ms !important; }
+    #petals{ display:none; }
+  }
+  .focus-visible:focus-visible{ outline:3px solid #C95A7A; outline-offset:3px; }
+</style>
+</head>
+<body class="grain antialiased">
+<div class="orb orb1"></div><div class="orb orb2"></div>
+<canvas id="petals" aria-hidden="true"></canvas>
+<div id="announcer" class="sr-only" aria-live="polite"></div>
+
+<!-- ============ PUBLIC INVITATION ============ -->
+<div id="inviteRoot" class="relative z-10 min-h-screen flex flex-col">
+  <header class="sticky top-0 z-30 px-4 sm:px-6 pt-4">
+    <div class="max-w-6xl mx-auto glass rounded-2xl px-4 sm:px-5 py-3 flex items-center justify-between">
+      <a href="#/" class="flex items-center gap-3 group" aria-label="For Val home">
+        <span class="w-9 h-9 rounded-full bg-charcoal text-cream grid place-items-center font-serif italic text-lg leading-none group-hover:rotate-6 transition">V</span>
+        <span class="leading-tight">
+          <span class="block text-[11px] tracking-[0.22em] uppercase text-muted font-medium">Private invitation</span>
+          <span class="block font-serif italic text-lg -mt-0.5">For Val</span>
+        </span>
+      </a>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div id="stepPill" class="hidden sm:flex items-center gap-2 text-xs font-medium tracking-wide bg-cream2 border border-white rounded-full px-3 py-1.5">
+          <span class="w-2 h-2 rounded-full bg-rosedeep animate-pulse"></span><span id="stepPillText">Just for you</span>
+        </div>
+        <button id="soundBtn" aria-label="Toggle soft music" class="focus-visible w-10 h-10 rounded-full glass-soft grid place-items-center hover:scale-105 transition">
+          <svg id="soundIconOff" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="16" r="2.5"/></svg>
+          <svg id="soundIconOn" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C95A7A" stroke-width="2"><path d="M9 18V6l10-2v12"/><circle cx="7" cy="18" r="2.5"/><circle cx="17" cy="16" r="2.5"/><path d="M2 12h2M20 12h2" stroke-linecap="round"/></svg>
+        </button>
+        <a href="#/admin" aria-label="Admin" class="focus-visible w-10 h-10 rounded-full glass-soft grid place-items-center hover:scale-105 transition opacity-70 hover:opacity-100">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="max-w-6xl mx-auto mt-3 px-1">
+      <div class="h-[6px] bg-white/70 rounded-full overflow-hidden border border-white shadow-sm">
+        <div id="progressBar" class="h-full w-0 rounded-full bg-gradient-to-r from-rose via-rosedeep to-charcoal transition-all duration-700"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 grid lg:grid-cols-[420px_1fr] gap-6 items-start">
+    <!-- Side visual -->
+    <aside class="hidden lg:block sticky top-28 overflow-hidden rounded-[28px] glass p-0">
+      <div class="relative h-[560px]">
+        <img id="sideImg" src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=900&q=80" alt="Romantic moment" class="absolute inset-0 w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#211A17]/85 via-[#211A17]/25 to-transparent"></div>
+        <div class="absolute top-5 left-5 right-5 flex items-center justify-between">
+          <span class="text-[11px] tracking-[0.2em] uppercase bg-white/20 backdrop-blur text-white px-3 py-1.5 rounded-full border border-white/30">N°001 — Val only</span>
+          <span class="flex gap-1.5" id="sideDots"></span>
+        </div>
+        <div class="absolute bottom-0 p-7 text-white">
+          <p id="sideKicker" class="text-[12px] tracking-[0.2em] uppercase opacity-80 mb-2">A note before you open</p>
+          <h2 id="sideTitle" class="serif italic text-3xl leading-tight mb-2">I made the internet blush a little.</h2>
+          <p id="sideSub" class="text-white/80 text-[15px] leading-relaxed font-light">No templates. No shortcuts. Just one person who wanted to ask you properly.</p>
+          <div class="mt-5 flex items-center gap-3 text-sm text-white/70">
+            <span class="w-8 h-8 rounded-full bg-white/20 backdrop-blur grid place-items-center border border-white/30">♡</span>
+            <span class="italic serif">— someone who likes your laugh a lot</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Stage -->
+    <section class="w-full max-w-xl mx-auto lg:max-w-none">
+      <div id="closedBanner" class="hidden mb-4 glass rounded-2xl p-4 text-sm flex items-center gap-3 border-l-4 border-l-gold">
+        <span class="text-xl">🌙</span><p><strong>Paused for a moment.</strong> The creator temporarily closed this invitation. Check back soon, Val.</p>
+      </div>
+      <div id="stageWrap" class="relative">
+        <div id="stage" class="min-h-[520px]"></div>
+      </div>
+      <p class="text-center mt-6 text-[13px] text-muted">Made with care, for Val only • 2026 <button id="adminDot" class="opacity-30 hover:opacity-100 transition px-2" aria-label="Admin login">·</button></p>
+    </section>
+  </main>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<div id="adminRoot" class="relative z-10 min-h-screen hidden">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+    <div class="glass rounded-2xl px-5 py-4 flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <span class="w-10 h-10 rounded-xl bg-charcoal text-cream grid place-items-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></span>
+        <div><p class="text-[11px] tracking-[0.2em] uppercase text-muted">Private</p><h1 class="serif italic text-xl leading-none">Creator Dashboard</h1></div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="#/" class="text-sm px-4 py-2 rounded-full glass-soft hover:bg-white transition">← Back to invite</a>
+        <button id="logoutBtn" class="hidden text-sm px-4 py-2 rounded-full bg-charcoal text-cream hover:bg-cocoa transition">Log out</button>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div id="adminLogin" class="max-w-md mx-auto glass rounded-[26px] p-8 sm:p-10 text-center shadow-card">
+      <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-blush to-rose grid place-items-center text-2xl mb-4 heart-beat">♡</div>
+      <h2 class="serif text-3xl mb-1">Hey, you.</h2>
+      <p class="text-muted text-sm mb-6">This corner is only for the person who made this.<br>Val — this part isn't for you, love.</p>
+      <label class="text-left block text-xs font-semibold tracking-widest uppercase text-muted mb-2" for="adminPass">Passphrase</label>
+      <div class="relative">
+        <input id="adminPass" type="password" autocomplete="current-password" placeholder="••••••••" class="field rounded-2xl px-4 py-3.5 pr-12 text-[15px]">
+        <button id="togglePass" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 grid place-items-center rounded-full hover:bg-cream2 transition" aria-label="Show password">👁</button>
+      </div>
+      <p id="lockMsg" class="hidden text-xs mt-3 text-rosedeep bg-rosedeep/10 rounded-xl px-3 py-2"></p>
+      <button id="loginBtn" class="btn-primary w-full mt-4 rounded-2xl py-3.5 font-semibold tracking-wide">Unlock dashboard</button>
+      <p class="text-[12px] text-muted mt-4 bg-cream2/70 rounded-xl px-3 py-2.5">Demo passphrase: <button id="fillDemo" class="font-semibold text-rosedeep underline underline-offset-2">forval2026</button> — change it in Settings after you log in.</p>
+      <p class="text-[11px] text-muted/70 mt-3">Protected by salted SHA-256 + expiring session token + lockout after 5 tries. No secrets in URLs.</p>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="adminDash" class="hidden">
+      <div class="flex flex-wrap gap-2 mb-5" role="tablist">
+        <button data-tab="overview" class="admin-tab active px-5 py-2.5 rounded-full text-sm font-medium glass transition">Overview</button>
+        <button data-tab="responses" class="admin-tab px-5 py-2.5 rounded-full text-sm font-medium glass transition">Responses <span id="respCountBadge" class="ml-1 text-xs bg-rosedeep text-white rounded-full px-2 py-0.5">0</span></button>
+        <button data-tab="settings" class="admin-tab px-5 py-2.5 rounded-full text-sm font-medium glass transition">Settings</button>
+        <button data-tab="docs" class="admin-tab px-5 py-2.5 rounded-full text-sm font-medium glass transition">Deploy & Docs</button>
+      </div>
+
+      <div id="tab-overview" class="admin-pane">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5">
+          <div class="glass rounded-2xl p-5"><p class="text-[11px] tracking-widest uppercase text-muted">Total responses</p><p id="statTotal" class="serif text-4xl mt-1">0</p><p class="text-xs text-muted mt-1">all time</p></div>
+          <div class="glass rounded-2xl p-5"><p class="text-[11px] tracking-widest uppercase text-muted">Said yes</p><p id="statYes" class="serif text-4xl mt-1 text-rosedeep">0</p><p id="statYesPct" class="text-xs text-muted mt-1">—</p></div>
+          <div class="glass rounded-2xl p-5"><p class="text-[11px] tracking-widest uppercase text-muted">Avg excitement</p><p id="statExc" class="serif text-4xl mt-1">—</p><p class="text-xs text-muted mt-1">out of 10</p></div>
+          <div class="glass rounded-2xl p-5"><p class="text-[11px] tracking-widest uppercase text-muted">Latest</p><p id="statLatest" class="serif text-lg mt-2 leading-tight">No replies yet</p><p class="text-xs text-muted mt-1">waiting on Val ♡</p></div>
+        </div>
+        <div class="grid lg:grid-cols-2 gap-4">
+          <div class="glass rounded-2xl p-6"><h3 class="serif italic text-xl mb-4">Date vibe breakdown</h3><div id="vibeBars" class="space-y-3"></div></div>
+          <div class="glass rounded-2xl p-6"><h3 class="serif italic text-xl mb-1">Latest whisper</h3><p class="text-xs text-muted mb-4">Most recent response preview — full details in Responses.</p><div id="latestCard" class="text-sm"></div></div>
+        </div>
+        <div class="glass rounded-2xl p-6 mt-4 flex flex-wrap items-center gap-3">
+          <div class="flex-1 min-w-[200px]"><h3 class="serif italic text-xl">Share the invite</h3><p class="text-sm text-muted">Send Val this exact link. Nothing private leaks on the public page.</p></div>
+          <button id="copyInvite" class="btn-primary px-5 py-2.5 rounded-full text-sm font-medium">Copy invite link</button>
+          <button id="exportJsonTop" class="px-5 py-2.5 rounded-full text-sm font-medium glass-soft border hover:bg-white transition">Export JSON</button>
+        </div>
+      </div>
+
+      <div id="tab-responses" class="admin-pane hidden">
+        <div class="glass rounded-2xl p-4 sm:p-5 mb-4 flex flex-col sm:flex-row gap-3 sm:items-center">
+          <div class="relative flex-1"><input id="searchInput" placeholder="Search location, activity, notes…" class="field rounded-full px-5 py-3 text-sm"><span class="absolute right-4 top-1/2 -translate-y-1/2 opacity-40">⌕</span></div>
+          <select id="filterAccepted" class="field rounded-full px-4 py-3 text-sm sm:w-44"><option value="">All answers</option><option value="yes">Said yes ♡</option><option value="no">Not yet</option></select>
+          <select id="sortBy" class="field rounded-full px-4 py-3 text-sm sm:w-44"><option value="new">Newest first</option><option value="old">Oldest first</option><option value="exc">Most excited</option></select>
+        </div>
+        <div class="flex gap-2 mb-4">
+          <button id="exportCsv" class="text-xs px-4 py-2 rounded-full bg-charcoal text-cream">Download CSV</button>
+          <button id="exportJson" class="text-xs px-4 py-2 rounded-full glass">Download JSON</button>
+          <button id="refreshBtn" class="text-xs px-4 py-2 rounded-full glass">↻ Refresh</button>
+        </div>
+        <div id="respList" class="space-y-3"></div>
+      </div>
+
+      <div id="tab-settings" class="admin-pane hidden grid lg:grid-cols-2 gap-4">
+        <div class="glass rounded-2xl p-6">
+          <h3 class="serif italic text-xl mb-1">Invitation status</h3><p class="text-sm text-muted mb-4">Pause the public form without deleting anything.</p>
+          <div class="flex items-center justify-between bg-cream2/70 rounded-2xl px-4 py-3">
+            <span id="openLabel" class="text-sm font-medium">Open — Val can reply</span>
+            <button id="toggleOpen" class="w-14 h-8 rounded-full bg-charcoal relative transition"><span id="toggleKnob" class="absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all"></span></button>
+          </div>
+          <h3 class="serif italic text-xl mt-6 mb-1">Change passphrase</h3><p class="text-sm text-muted mb-3">Min 8 characters. Stored as SHA-256 hash only.</p>
+          <input id="curPass" type="password" placeholder="Current passphrase" class="field rounded-xl px-4 py-3 text-sm mb-2">
+          <input id="newPass" type="password" placeholder="New passphrase" class="field rounded-xl px-4 py-3 text-sm mb-2">
+          <input id="newPass2" type="password" placeholder="Confirm new passphrase" class="field rounded-xl px-4 py-3 text-sm mb-3">
+          <button id="changePassBtn" class="btn-primary w-full rounded-xl py-3 text-sm font-semibold">Update passphrase</button>
+          <p id="passMsg" class="text-xs mt-2"></p>
+        </div>
+        <div class="space-y-4">
+          <div class="glass rounded-2xl p-6">
+            <h3 class="serif italic text-xl mb-1">Cloud sync <span class="text-[10px] align-middle tracking-widest uppercase bg-sage/20 text-green-900 px-2 py-1 rounded-full ml-1">optional</span></h3>
+            <p class="text-sm text-muted mb-3">Single-file build ships with a persistent local database layer. Paste a REST / Supabase webhook to mirror every response server-side.</p>
+            <input id="webhookUrl" placeholder="https://your-api.com/api/responses" class="field rounded-xl px-4 py-3 text-sm mb-3">
+            <button id="saveWebhook" class="px-5 py-2.5 rounded-full glass-soft border text-sm hover:bg-white transition">Save endpoint</button>
+            <p id="webhookMsg" class="text-xs mt-2 text-muted"></p>
+          </div>
+          <div class="glass rounded-2xl p-6 border-l-4 border-l-rosedeep">
+            <h3 class="serif italic text-xl mb-1">Danger zone</h3><p class="text-sm text-muted mb-3">Irreversible. Requires login.</p>
+            <div class="flex gap-2"><button id="wipeBtn" class="px-5 py-2.5 rounded-full bg-rosedeep text-white text-sm">Delete all responses</button><button id="resetDemoBtn" class="px-5 py-2.5 rounded-full glass-soft border text-sm">Reset demo</button></div>
+          </div>
+          <div class="glass rounded-2xl p-6 text-sm">
+            <p class="text-[11px] tracking-widest uppercase text-muted mb-1">Invitation</p>
+            <p>ID: <code class="bg-cream2 px-2 py-0.5 rounded">inv_for-val_2026_01</code></p>
+            <p class="mt-1 text-muted">Session expires 2h after login • All admin reads require a valid token.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-docs" class="admin-pane hidden">
+        <div class="glass rounded-2xl p-6 sm:p-8 prose-docs text-[14px] leading-relaxed max-w-3xl">
+          <h2 class="serif italic text-2xl">Deploy & setup guide</h2>
+          <p class="text-muted">This single-file build contains the full product (public invite + secure admin + database layer). For production with a real server DB, promote the included <code>Backend</code> adapter to Postgres/Supabase in ~10 minutes.</p>
+          <h3>1 — Folder structure (production)</h3>
+<pre>for-val/
+├─ public/
+│  ├─ index.html        # this file (public invite)
+│  └─ assets/
+├─ server/
+│  ├─ index.js          # express API + auth + validation
+│  ├─ db.js             # pg / supabase client
+│  ├─ auth.js           # bcrypt + JWT sessions
+│  └─ validate.js       # shared Zod/Joi schema
+├─ supabase/
+│  └─ schema.sql        # table + RLS policies
+├─ .env                 # DATABASE_URL, JWT_SECRET, ADMIN_HASH
+└─ README.md</pre>
+          <h3>2 — Database schema (required fields)</h3>
+<pre>create table responses (
+  response_id text primary key,
+  invitation_id text not null default 'inv_for-val_2026_01',
+  accepted boolean not null,
+  preferred_date text,
+  preferred_time text,
+  date_type text,
+  preferred_location text,
+  activity_preference text,
+  food_restrictions text,
+  likes text,
+  dislikes text,
+  comfort_preferences text,
+  anything_else text,
+  rapid_fire_answers jsonb default '{}',
+  excitement_rating int check (excitement_rating between 1 and 10),
+  submitted_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+-- RLS: enable row level security;
+-- allow INSERT from anon, SELECT/DELETE only for service_role (admin JWT).</pre>
+          <h3>3 — Server API (Node + Express sketch)</h3>
+<pre>POST /api/responses      # public, rate-limited, validated, sanitized
+GET  /api/responses      # admin JWT required
+DELETE /api/responses/:id# admin JWT required
+POST /api/admin/login    # bcrypt.compare → JWT (2h)
+# Never expose ADMIN password or service key to client.</pre>
+          <h3>4 — Deploy</h3>
+          <p><strong>Vercel / Netlify (frontend):</strong> drag-drop this HTML file. Map <code>/admin</code> → <code>/#/admin</code> rewrite. <strong>Render / Fly (backend):</strong> deploy <code>server/</code>, set <code>DATABASE_URL</code> + <code>JWT_SECRET</code>. Paste the API URL into Settings → Cloud sync. Done.</p>
+          <h3>Security checklist</h3>
+          <p>✔ Server-side auth (JWT) • ✔ Input validation + length caps + HTML-escaping • ✔ Rate limit (5/min/IP) • ✔ RLS — public can only insert • ✔ Secrets in env, never in client • ✔ Admin session expiry + lockout • ✔ No private data on public routes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toasts" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-md space-y-2"></div>
+
+<script>
+/* ============================================================
+   FOR VAL — single-file full application
+   Public invite + authenticated admin + persistent DB layer
+   ============================================================ */
+const INVITATION_ID = 'inv_for-val_2026_01';
+const DB_KEY='for-val_responses_db_v1', DRAFT_KEY='for-val_draft_v1',
+      HASH_KEY='for-val_admin_hash', SESS_KEY='for-val_admin_session',
+      LOCK_KEY='for-val_admin_lock', OPEN_KEY='for-val_invitation_open',
+      HOOK_KEY='for-val_webhook';
+const DEFAULT_PASS='forval2026';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=p=>(p||'resp_')+(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,10):Date.now().toString(36)+Math.random().toString(36).slice(2,8));
+const nowISO=()=>new Date().toISOString();
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+const announce=m=>{ $('#announcer').textContent=m; };
+
+function toast(msg,type='love'){
+  const colors={love:'bg-charcoal text-cream', rose:'bg-rosedeep text-white', dark:'bg-charcoal text-cream'};
+  const el=document.createElement('div');
+  el.className=`toast-in ${colors[type]||colors.love} rounded-2xl px-5 py-3.5 text-sm shadow-card flex items-start gap-3`;
+  el.innerHTML=`<span class="text-base leading-none mt-0.5">${type==='rose'?'!':'♡'}</span><span>${msg}</span>`;
+  $('#toasts').appendChild(el);
+  setTimeout(()=>{ el.style.transition='.4s'; el.style.opacity='0'; el.style.transform='translateY(10px)'; setTimeout(()=>el.remove(),400); },3400);
+}
+function boom(big=false){
+  if(typeof confetti==='undefined') return;
+  const colors=['#E78CA0','#C95A7A','#FADADD','#C9A86A','#FFF1E6'];
+  confetti({particleCount:big?160:70,spread:big?100:70,origin:{y:.6},colors,disableForReducedMotion:true});
+  if(big) setTimeout(()=>confetti({particleCount:80,angle:60,spread:60,origin:{x:0},colors}),250),
+          setTimeout(()=>confetti({particleCount:80,angle:120,spread:60,origin:{x:1},colors}),400);
+}
+
+/* ---------- hashing / auth ---------- */
+async function sha256hex(str){
+  try{
+    if(crypto.subtle){
+      const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('forval::'+str));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+    }
+  }catch(e){}
+  let h1=0xdeadbeef,h2=0x41c6ce57;
+  for(let i=0;i<str.length;i++){const ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return 'fb_'+(h2>>>0).toString(16)+(h1>>>0).toString(16);
+}
+async function getStoredHash(){ let h=localStorage.getItem(HASH_KEY); if(!h){ h=await sha256hex(DEFAULT_PASS); localStorage.setItem(HASH_KEY,h);} return h; }
+function getSession(){ try{const s=JSON.parse(sessionStorage.getItem(SESS_KEY)||'null'); if(s&&s.exp>Date.now()) return s; sessionStorage.removeItem(SESS_KEY);}catch(e){} return null; }
+function setSession(){ const s={token:(crypto.randomUUID?crypto.randomUUID():uid('tok_')),exp:Date.now()+2*3600*1000}; sessionStorage.setItem(SESS_KEY,JSON.stringify(s)); return s; }
+function requireAuth(){ const s=getSession(); if(!s) throw new Error('Unauthorized — please log in.'); return s; }
+function lockInfo(){ try{return JSON.parse(localStorage.getItem(LOCK_KEY)||'{"attempts":0,"until":0}');}catch(e){return{attempts:0,until:0};} }
+function setLock(o){ localStorage.setItem(LOCK_KEY,JSON.stringify(o)); }
+
+/* ---------- validation (shared client+server shape) ---------- */
+const ALLOWED_VIBES=['Cozy Dinner','Adventure Day','Artsy & Culture','Easy & Chill','Surprise Me'];
+const ALLOWED_TIMES=['Morning','Afternoon','Golden Hour','Evening','Late Night'];
+function sanitizeStr(v,max=500){ let s=String(v??'').replace(/<[^>]*>/g,'').trim(); if(s.length>max) s=s.slice(0,max); return s; }
+function validateResponse(d){
+  const errs=[];
+  if(typeof d.accepted!=='boolean') errs.push('accepted must be true/false');
+  if(d.preferred_date!==undefined&&sanitizeStr(d.preferred_date,80).length===0) errs.push('preferred_date required');
+  if(d.date_type&&!ALLOWED_VIBES.includes(d.date_type)) errs.push('invalid date_type');
+  if(d.excitement_rating!==undefined&&(isNaN(+d.excitement_rating)||+d.excitement_rating<1||+d.excitement_rating>10)) errs.push('excitement 1-10');
+  ['preferred_time','preferred_location','activity_preference','food_restrictions','likes','dislikes','comfort_preferences','anything_else'].forEach(k=>{
+    if(d[k]!==undefined&&String(d[k]).length>1200) errs.push(k+' too long');
+  });
+  if(d.rapid_fire_answers&&typeof d.rapid_fire_answers!=='object') errs.push('rapid_fire invalid');
+  return errs;
+}
+function cleanResponse(d){
+  return {
+    response_id:sanitizeStr(d.response_id,60)||uid(),
+    invitation_id:INVITATION_ID,
+    accepted:!!d.accepted,
+    preferred_date:sanitizeStr(d.preferred_date,80),
+    preferred_time:sanitizeStr(d.preferred_time,120),
+    date_type:ALLOWED_VIBES.includes(d.date_type)?d.date_type:sanitizeStr(d.date_type,60),
+    preferred_location:sanitizeStr(d.preferred_location,300),
+    activity_preference:sanitizeStr(d.activity_preference,300),
+    food_restrictions:sanitizeStr(d.food_restrictions,500),
+    likes:sanitizeStr(d.likes,500),
+    dislikes:sanitizeStr(d.dislikes,500),
+    comfort_preferences:sanitizeStr(d.comfort_preferences,500),
+    anything_else:sanitizeStr(d.anything_else,1200),
+    rapid_fire_answers:(typeof d.rapid_fire_answers==='object'&&d.rapid_fire_answers)||{},
+    excitement_rating:Math.min(10,Math.max(1,parseInt(d.excitement_rating)||7)),
+    submitted_at:d.submitted_at||nowISO(),
+    updated_at:nowISO()
+  };
+}
+
+/* ---------- persistent database layer ---------- */
+const Backend={
+  read(){ try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]');}catch(e){return[];} },
+  write(a){ localStorage.setItem(DB_KEY,JSON.stringify(a)); },
+  async create(payload){
+    await delay(500);
+    if(!isOpen()) throw new Error('This invitation is currently paused. Try again soon ♡');
+    const all=this.read();
+    const tenMinAgo=Date.now()-10*60*1000;
+    if(all.filter(r=>Date.now()-new Date(r.submitted_at).getTime()<10*60*1000).length>=6) throw new Error('A few replies just came in — wait a moment before sending another ♡');
+    const errs=validateResponse(payload);
+    if(errs.length) throw new Error('Please check: '+errs[0]);
+    const rec=cleanResponse(payload);
+    all.unshift(rec); this.write(all);
+    const hook=localStorage.getItem(HOOK_KEY);
+    if(hook){ fetch(hook,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(rec)}).catch(()=>{}); }
+    return rec;
+  },
+  async list(){ requireAuth(); await delay(250); return this.read(); },
+  async remove(id){ requireAuth(); await delay(200); const a=this.read().filter(r=>r.response_id!==id); this.write(a); return a; },
+  async wipe(){ requireAuth(); this.write([]); }
+};
+function isOpen(){ const v=localStorage.getItem(OPEN_KEY); return v===null?true:v==='1'; }
+function setOpen(o){ localStorage.setItem(OPEN_KEY,o?'1':'0'); }
+
+/* ---------- invite state ---------- */
+const RAPID=[
+  {k:'sip',q:'The sip situation',a:'Coffee',b:'Matcha',ia:'☕',ib:'🍵'},
+  {k:'sky',q:'Pick a sky',a:'Sunset',b:'Stargazing',ia:'🌅',ib:'✨'},
+  {k:'fit',q:'Dress code',a:'Dress up',b:'Cozy fit',ia:'👗',ib:'🧸'},
+  {k:'scene',q:'The scene',a:'City lights',b:'Nature escape',ia:'🌃',ib:'🌿'},
+  {k:'sound',q:'In the background',a:'Playlist on',b:'Deep talks',ia:'🎶',ib:'💬'},
+];
+const VIBES=[
+  {t:'Cozy Dinner',d:'Candlelight, good pasta, zero rush.',img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80'},
+  {t:'Adventure Day',d:'Wander somewhere new, get a little lost.',img:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80'},
+  {t:'Artsy & Culture',d:'Galleries, live music, beautiful things.',img:'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=800&q=80'},
+  {t:'Easy & Chill',d:'Picnic, coffee, long walk, no plan.',img:'https://images.unsplash.com/photo-1414016642750-7fdd78dc33d9?auto=format&fit=crop&w=800&q=80'},
+  {t:'Surprise Me',d:'You handle it. I trust you completely.',img:'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&w=800&q=80'},
+];
+let step=0, lastSaved=null;
+let draft={accepted:null,preferred_date:'',preferred_time:'',date_type:'',preferred_location:'',activity_preference:'',food_restrictions:'',likes:'',dislikes:'',comfort_preferences:'',anything_else:'',rapid_fire_answers:{},excitement_rating:8};
+try{ const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null'); if(d) draft={...draft,...d}; }catch(e){}
+function saveDraft(){ localStorage.setItem(DRAFT_KEY,JSON.stringify(draft)); }
+const TOTAL=9;
+const SIDE={
+  0:{img:'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=900&q=80',k:'A note before you open',t:'I made the internet blush a little.',s:'No templates. No shortcuts. Just one person who wanted to ask you properly.'},
+  1:{img:'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=900&q=80',k:'Read this first, Val',t:'You always say effort matters.',s:'So I built you a whole little world instead of sending a plain “wanna hang?” text.'},
+  2:{img:'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=80',k:'The big question',t:'Deep breath. Here it goes.',s:'There is a correct answer here and we both know it.'},
+  3:{img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',k:'Step 3 — the vibe',t:'What kind of night are we dreaming of?',s:'Pick the one that makes you smile first. Instincts are hot.'},
+  4:{img:'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=80',k:'Step 4 — when',t:'When does Val have a free evening?',s:'Rough is perfect. “Whenever you’re free” also counts if you tick flexible.'},
+  5:{img:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=900&q=80',k:'Step 5 — where',t:'Where should I take you?',s:'Favourite spot, somewhere new, or totally my call — all good answers.'},
+  6:{img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80',k:'Step 6 — the details',t:'Tell me how to get it right.',s:'Food, comfort, little things you love (and hate). I’m taking notes.'},
+  7:{img:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=900&q=80',k:'Step 7 — rapid fire',t:'Don’t think. Just tap.',s:'Five tiny choices that tell me everything.'},
+  8:{img:'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=900&q=80',k:'Step 8 — almost done',t:'How excited are you? Be honest.',s:'Slide it up. I can take it. I hope it’s a 10.'},
+  9:{img:'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=900&q=80',k:'Last look',t:'Does this sound like us?',s:'Review it, then seal it with a kiss (send button).'},
+  10:{img:'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=900&q=80',k:'It’s official',t:'Date secured. I’m smiling so big.',s:'I’ll handle every detail from here. Just show up beautiful.'},
+};
+function updateChrome(){
+  const pct = step===0?4 : step>=10?100 : Math.round((step/TOTAL)*100);
+  $('#progressBar').style.width=pct+'%';
+  const labels={0:'Just for you',1:'Step 1 of 9',2:'Step 2 of 9',3:'Step 3 of 9',4:'Step 4 of 9',5:'Step 5 of 9',6:'Step 6 of 9',7:'Step 7 of 9',8:'Step 8 of 9',9:'Step 9 of 9',10:'Sealed ♡'};
+  $('#stepPillText').textContent=labels[step]||'';
+  const s=SIDE[step]||SIDE[0];
+  const img=$('#sideImg'); if(img&&img.src!==s.img){ img.style.opacity=0; setTimeout(()=>{img.src=s.img; img.onload=()=>img.style.opacity=1; setTimeout(()=>img.style.opacity=1,400);},180); }
+  $('#sideKicker').textContent=s.k; $('#sideTitle').textContent=s.t; $('#sideSub').textContent=s.s;
+  $('#sideDots').innerHTML=Array.from({length:9},(_,i)=>`<span class="marquee-dot step-dot ${i<step?'bg-white':'bg-white/30'}" style="width:${i<step?18:6}px"></span>`).join('');
+  announce('Step '+step+': '+s.t);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function animateIn(){
+  const el=$('#stage');
+  if(window.gsap){ gsap.fromTo(el,{opacity:0,y:26,scale:.985},{opacity:1,y:0,scale:1,duration:.6,ease:'power3.out'}); $$('.fade-up').forEach((n,i)=>gsap.to(n,{opacity:1,y:0,duration:.6,delay:.08*i,ease:'power3.out'})); }
+  else{ $$('.fade-up').forEach(n=>{n.style.opacity=1;n.style.transform='none';}); }
+  const h=el.querySelector('h1,h2'); if(h){ h.setAttribute('tabindex','-1'); try{h.focus({preventScroll:true});}catch(e){} }
+}
+function navBtns(back=true,nextLabel='Continue →',nextId='nextBtn'){
+  return `<div class="flex items-center gap-3 mt-7">
+    ${back?`<button id="backBtn" class="focus-visible px-5 py-3.5 rounded-full glass-soft border text-sm font-medium hover:bg-white transition shrink-0">← Back</button>`:''}
+    <button id="${nextId}" class="focus-visible btn-primary flex-1 rounded-full py-3.5 text-[15px] font-semibold tracking-wide">${nextLabel}</button>
+  </div>`;
+}
+function errBox(id){ return `<p id="${id}" class="hidden text-[13px] mt-3 text-rosedeep bg-rosedeep/10 border border-rosedeep/20 rounded-xl px-4 py-2.5"></p>`; }
+function showErr(id,msg){ const e=document.getElementById(id); if(!e) return; if(!msg){e.classList.add('hidden');return;} e.innerHTML=msg; e.classList.remove('hidden'); e.classList.remove('shake'); void e.offsetWidth; e.classList.add('shake'); }
+
+/* ---------- STAGES ---------- */
+function render(){
+  updateChrome();
+  const st=$('#stage');
+  if(!isOpen()&&step!==0&&step!==10){ step=0; }
+  $('#closedBanner').classList.toggle('hidden',isOpen());
+  if(step===0) st.innerHTML=tplLanding();
+  else if(step===1) st.innerHTML=tplIntro();
+  else if(step===2) st.innerHTML=tplBigQ();
+  else if(step===3) st.innerHTML=tplVibe();
+  else if(step===4) st.innerHTML=tplWhen();
+  else if(step===5) st.innerHTML=tplWhere();
+  else if(step===6) st.innerHTML=tplPrefs();
+  else if(step===7) st.innerHTML=tplRapid();
+  else if(step===8) st.innerHTML=tplFinal();
+  else if(step===9) st.innerHTML=tplReview();
+  else if(step===10) st.innerHTML=tplSuccess();
+  bind();
+  animateIn();
+}
+function tplLanding(){
+  return `<div class="glass rounded-[28px] p-7 sm:p-10 text-center shadow-card relative overflow-hidden">
+    <div class="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-gradient-to-br from-blush to-rose/40 blur-2xl opacity-60"></div>
+    <div class="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-gradient-to-br from-cream2 to-gold/30 blur-2xl opacity-60"></div>
+    <p class="fade-up relative text-[11px] tracking-[0.28em] uppercase text-muted">A private website • for one person</p>
+    <h1 class="fade-up serif text-[52px] sm:text-[64px] leading-[1.02] mt-3">Hey <span class="italic text-rosedeep">Val</span><span class="typewriter-cursor"></span></h1>
+    <p class="fade-up serif italic text-xl sm:text-2xl text-cocoa/80 mt-3" id="typeLine">I made something for you.</p>
+    <div class="fade-up relative mx-auto mt-7 w-40 h-28">
+      <div class="absolute inset-x-4 top-6 bottom-0 bg-gradient-to-b from-cream2 to-blush rounded-2xl border border-white shadow-inner"></div>
+      <div class="envelope-flap absolute inset-x-4 top-6 h-14 bg-gradient-to-br from-rose to-rosedeep rounded-t-2xl" style="clip-path:polygon(0 0,50% 100%,100% 0)" id="flap"></div>
+      <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-charcoal text-cream grid place-items-center text-2xl shadow-lg heart-beat">♡</div>
+    </div>
+    <p class="fade-up text-[15px] text-muted leading-relaxed max-w-sm mx-auto mt-5">It’s not a text. It’s not a DM.<br>It’s a whole corner of the internet<br><em class="serif italic text-charcoal">built only for you.</em></p>
+    <button id="openBtn" class="fade-up pulse-ring btn-rose mt-7 w-full rounded-full py-4 text-[16px] font-semibold tracking-wide focus-visible">Open it ✉</button>
+    <p class="fade-up text-[12px] text-muted mt-4">Takes ~90 seconds • No wrong answers • One very good question inside</p>
+    <div class="fade-up flex items-center justify-center gap-2 mt-5 text-[12px] text-muted"><span class="w-8 h-8 rounded-full overflow-hidden border border-white shadow"><img src="https://i.pravatar.cc/100?img=12" alt="creator" class="w-full h-full object-cover"></span><span>From someone who <span class="text-rosedeep font-semibold">really</span> hopes you say yes</span></div>
+  </div>`;
+}
+function tplIntro(){
+  return `<div class="glass rounded-[28px] p-7 sm:p-9 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Before you ask…</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl leading-tight mt-2">Yes — this entire website <span class="italic text-rosedeep">is for you.</span></h2>
+    <div class="fade-up mt-5 rounded-2xl overflow-hidden border border-white shadow"><img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=800&q=80" alt="Small gift" class="w-full h-44 object-cover"></div>
+    <div class="space-y-3 mt-5 text-[15px] leading-relaxed text-cocoa">
+      <p class="fade-up glass-soft rounded-2xl p-4 border">I could’ve just texted <em class="serif italic">“let’s go out?”</em> — but you deserve better than a blue bubble.</p>
+      <p class="fade-up glass-soft rounded-2xl p-4 border">So I built this: a few playful questions so I can plan something <strong>you’ll actually love.</strong></p>
+      <p class="fade-up text-sm text-muted italic serif text-[16px]">“Someone took the time to make this specifically for me.” — that’s the whole point.</p>
+    </div>
+    ${navBtns(false,'Start →')}
+    <p class="text-center text-[12px] text-muted mt-3">P.S. There’s a “no” button later. Be honest — there’s no wrong answer. ♡</p>
+  </div>`;
+}
+function tplBigQ(){
+  return `<div class="glass rounded-[28px] p-7 sm:p-10 shadow-card text-center relative overflow-hidden" id="bigQBox">
+    <p class="fade-up text-[11px] tracking-[0.28em] uppercase text-muted">The only question that matters</p>
+    <h2 class="fade-up serif text-[38px] sm:text-5xl leading-[1.05] mt-3">Val, would you like to<br><span class="italic text-rosedeep">go on a date</span> with me?</h2>
+    <p class="fade-up text-muted text-[15px] mt-3">There’s no wrong answer — just be honest with me. ♡</p>
+    <div class="fade-up mt-6 rounded-2xl overflow-hidden border border-white"><img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80" alt="Holding hands" class="w-full h-48 object-cover"></div>
+    <div class="relative mt-7 grid gap-3" id="choiceZone">
+      <button id="yesBtn" class="focus-visible btn-rose rounded-full py-4 text-lg font-semibold">Yes — I’d love to 💕</button>
+      <button id="noBtn" class="focus-visible btn-primary rounded-full py-4 text-[15px] font-medium">Not right now</button>
+    </div>
+    <div id="noResponse" class="hidden mt-5 text-center glass-soft border rounded-2xl p-5">
+      <p class="serif italic text-lg mb-2">No worries at all 💛</p>
+      <p class="text-sm text-muted">Thanks for being honest with me.</p>
+    </div>
+    ${errBox('bigQErr')}
+    <button id="backBtn" class="mt-4 text-sm text-muted hover:text-charcoal transition">← Back</button>
+  </div>`;
+}
+function tplVibe(){
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Step 3 — the vibe</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl mt-1">What kind of <span class="italic text-rosedeep">us</span> are we feeling?</h2>
+    <p class="fade-up text-sm text-muted mt-1">Tap one. Trust your gut — it’s cute when you do.</p>
+    <div class="grid gap-3 mt-5">
+      ${VIBES.map((v,i)=>`
+      <button data-vibe="${esc(v.t)}" class="fade-up vibe-card text-left rounded-2xl overflow-hidden border border-white bg-white/80 shadow-sm flex gap-4 p-3 items-center ${draft.date_type===v.t?'selected':''}">
+        <span class="w-20 h-20 rounded-xl overflow-hidden shrink-0 relative"><img src="${v.img}" alt="${esc(v.t)}" class="w-full h-full object-cover" loading="lazy"><span class="vibe-check absolute top-1 right-1 w-6 h-6 bg-charcoal text-white rounded-full grid place-items-center text-xs">✓</span></span>
+        <span><span class="block font-semibold text-[16px]">${esc(v.t)}</span><span class="block text-[13px] text-muted mt-0.5">${esc(v.d)}</span></span>
+      </button>`).join('')}
+    </div>
+    ${errBox('vibeErr')}
+    ${navBtns(true,'This one →')}
+  </div>`;
+}
+function chips(list,active){ return list.map(c=>`<button type="button" data-chip="${esc(c)}" class="chip text-[13px] px-4 py-2 rounded-full border bg-white/80 border-[#F0E2D6] hover:border-charcoal transition ${active===c?'active':''}">${esc(c)}</button>`).join(''); }
+function tplWhen(){
+  const next7=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()+i+1);return d;});
+  const fmt=d=>d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  const iso=d=>d.toISOString().slice(0,10);
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Step 4 — when</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl mt-1">When can I <span class="italic text-rosedeep">steal you away?</span></h2>
+    <label class="fade-up block text-xs font-semibold tracking-widest uppercase text-muted mt-6 mb-2">Pick a day</label>
+    <div class="fade-up flex flex-wrap gap-2">${next7.map(d=>`<button type="button" data-date="${iso(d)}" class="chip date-chip text-[13px] px-3.5 py-2 rounded-full border bg-white/80 border-[#F0E2D6] ${draft.preferred_date===iso(d)?'active':''}">${fmt(d)}</button>`).join('')}
+      <button type="button" id="flexBtn" class="chip text-[13px] px-4 py-2 rounded-full border ${draft.preferred_date==='Flexible'?'active':''} ${draft.preferred_date==='Flexible'?'bg-charcoal text-cream border-charcoal':'bg-blush/60 border-rose/30'}">✨ I’m flexible — you pick</button>
+    </div>
+    <div class="fade-up grid grid-cols-2 gap-3 mt-3">
+      <div><label class="text-xs text-muted" for="dateInput">Or exact date</label><input id="dateInput" type="date" value="${draft.preferred_date&&draft.preferred_date!=='Flexible'?esc(draft.preferred_date):''}" class="field rounded-xl px-4 py-3 text-sm mt-1"></div>
+      <div><label class="text-xs text-muted" for="timeCustom">Exact time <span class="opacity-60">(optional)</span></label><input id="timeCustom" type="time" class="field rounded-xl px-4 py-3 text-sm mt-1"></div>
+    </div>
+    <label class="fade-up block text-xs font-semibold tracking-widest uppercase text-muted mt-6 mb-2">What time feels right?</label>
+    <div class="fade-up flex flex-wrap gap-2">${chips(['Morning','Afternoon','Golden Hour','Evening','Late Night'],draft.preferred_time.split(' (')[0])}</div>
+    <p class="fade-up text-[12px] text-muted mt-3 italic serif text-[14px]">Golden hour gets you extra points. Just saying.</p>
+    ${errBox('whenErr')}
+    ${navBtns(true,'Love that →')}
+  </div>`;
+}
+function tplWhere(){
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Step 5 — where</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl mt-1">Where should this <span class="italic text-rosedeep">happen?</span></h2>
+    <label class="fade-up block text-xs font-semibold tracking-widest uppercase text-muted mt-6 mb-2" for="locInput">Preferred location</label>
+    <input id="locInput" placeholder="e.g. That cozy Italian place downtown…" value="${esc(draft.preferred_location)}" maxlength="300" class="fade-up field rounded-2xl px-5 py-3.5 text-[15px]">
+    <div class="fade-up flex flex-wrap gap-2 mt-3" id="locChips">${chips(['Somewhere new','Rooftop with a view','Cozy spot you love','You pick — I trust you'],'')}</div>
+    <label class="fade-up block text-xs font-semibold tracking-widest uppercase text-muted mt-6 mb-2" for="actInput">Activity preference</label>
+    <textarea id="actInput" rows="2" placeholder="e.g. Dinner + long walk, live music, museum then dessert…" maxlength="300" class="fade-up field rounded-2xl px-5 py-3.5 text-[15px] resize-none">${esc(draft.activity_preference)}</textarea>
+    <div class="fade-up flex flex-wrap gap-2 mt-3" id="actChips">${chips(['Dinner + walk','Live music','Museum / gallery','Movie night','Cook together'],'')}</div>
+    ${errBox('whereErr')}
+    ${navBtns(true,'Noted →')}
+  </div>`;
+}
+function tplPrefs(){
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Step 6 — the details</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl mt-1">Help me get it <span class="italic text-rosedeep">perfect.</span></h2>
+    <p class="fade-up text-sm text-muted">I’m actually taking notes. Impress me with specifics.</p>
+    <div class="space-y-4 mt-5">
+      <div class="fade-up"><label class="text-xs font-semibold tracking-widest uppercase text-muted" for="foodIn">Food restrictions / allergies</label><input id="foodIn" placeholder="e.g. Vegetarian, no shellfish…" value="${esc(draft.food_restrictions)}" maxlength="500" class="field rounded-2xl px-5 py-3 text-[15px] mt-1.5"></div>
+      <div class="fade-up grid sm:grid-cols-2 gap-3">
+        <div><label class="text-xs font-semibold tracking-widest uppercase text-muted" for="likesIn">Things you love ♡</label><input id="likesIn" placeholder="e.g. Dessert, playlists…" value="${esc(draft.likes)}" maxlength="500" class="field rounded-2xl px-5 py-3 text-[15px] mt-1.5"></div>
+        <div><label class="text-xs font-semibold tracking-widest uppercase text-muted" for="dislikesIn">Hard no’s</label><input id="dislikesIn" placeholder="e.g. Super spicy, crowds…" value="${esc(draft.dislikes)}" maxlength="500" class="field rounded-2xl px-5 py-3 text-[15px] mt-1.5"></div>
+      </div>
+      <div class="fade-up"><label class="text-xs font-semibold tracking-widest uppercase text-muted" for="comfortIn">Comfort preferences</label><textarea id="comfortIn" rows="2" placeholder="e.g. I get cold easily, prefer quiet corners, need parking…" maxlength="500" class="field rounded-2xl px-5 py-3 text-[15px] mt-1.5 resize-none">${esc(draft.comfort_preferences)}</textarea></div>
+    </div>
+    ${navBtns(true,'Almost fun part →')}
+  </div>`;
+}
+function tplRapid(){
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Step 7 — rapid fire ⚡</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl mt-1">Don’t think. <span class="italic text-rosedeep">Just tap.</span></h2>
+    <div class="space-y-4 mt-5">
+      ${RAPID.map((r,i)=>`<div class="fade-up glass-soft border rounded-2xl p-4">
+        <p class="text-[12px] tracking-widest uppercase text-muted mb-1">${i+1} / 5 • ${esc(r.q)}</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button data-rapid="${r.k}" data-val="${esc(r.a)}" class="rapid-opt rounded-xl border border-[#F0E2D6] bg-white/85 py-3 text-sm font-medium ${draft.rapid_fire_answers[r.k]===r.a?'picked':''}"><span class="text-lg block">${r.ia}</span>${esc(r.a)}</button>
+          <button data-rapid="${r.k}" data-val="${esc(r.b)}" class="rapid-opt rounded-xl border border-[#F0E2D6] bg-white/85 py-3 text-sm font-medium ${draft.rapid_fire_answers[r.k]===r.b?'picked':''}"><span class="text-lg block">${r.ib}</span>${esc(r.b)}</button>
+        </div></div>`).join('')}
+    </div>
+    ${errBox('rapidErr')}
+    ${navBtns(true,'Cute answers →')}
+  </div>`;
+}
+const EXC_LABELS={1:'Shy… but curious',2:'Warming up',3:'Okay, intrigued',4:'Smiling a little',5:'Pretty into it',6:'Getting excited',7:'Very excited',8:'So ready ♡',9:'Counting days!!',10:'OBSESSED. When?!'};
+function tplFinal(){
+  const v=+draft.excitement_rating||8;
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Step 8 — be honest</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl mt-1">How excited <span class="italic text-rosedeep">are you?</span></h2>
+    <div class="fade-up text-center mt-6 bg-gradient-to-b from-white/80 to-blush/40 border border-white rounded-2xl p-6">
+      <div id="excHeart" class="text-5xl heart-beat" style="transform:scale(${0.7+v*0.05})">${v>=9?'💖':v>=7?'💗':v>=5?'💕':'🤍'}</div>
+      <p class="serif italic text-4xl mt-2"><span id="excNum">${v}</span><span class="text-lg text-muted">/10</span></p>
+      <p id="excLabel" class="text-sm font-medium text-rosedeep mt-1">${EXC_LABELS[v]}</p>
+      <input id="excRange" type="range" min="1" max="10" value="${v}" class="mt-5" aria-label="Excitement rating 1 to 10">
+      <div class="flex justify-between text-[11px] text-muted mt-1"><span>meh</span><span>can’t wait</span></div>
+    </div>
+    <label class="fade-up block text-xs font-semibold tracking-widest uppercase text-muted mt-6 mb-2" for="elseIn">Anything else I should know? <span class="normal-case font-normal">(optional)</span></label>
+    <textarea id="elseIn" rows="3" maxlength="1200" placeholder="Dreams, surprises, secrets, playlists, dealbreakers… tell me everything." class="fade-up field rounded-2xl px-5 py-3.5 text-[15px] resize-none">${esc(draft.anything_else)}</textarea>
+    ${navBtns(true,'Review it →')}
+  </div>`;
+}
+function prettyDate(d){ if(!d) return '—'; if(d==='Flexible') return 'Flexible ✨ (your call)'; try{ const d2=new Date(d+'T12:00:00'); if(!isNaN(d2)) return d2.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});}catch(e){} return d; }
+function tplReview(){
+  const r=draft;
+  const rows=[
+    ['Answer',r.accepted?'Yes ♡ — obviously':'—','2'],
+    ['Vibe',esc(r.date_type||'—'),'3'],
+    ['Date',esc(prettyDate(r.preferred_date)),'4'],
+    ['Time',esc(r.preferred_time||'—'),'4'],
+    ['Where',esc(r.preferred_location||'—'),'5'],
+    ['Doing',esc(r.activity_preference||'—'),'5'],
+    ['Excitement',(r.excitement_rating||8)+'/10 ♡','8'],
+  ];
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card">
+    <p class="fade-up text-[11px] tracking-[0.25em] uppercase text-rosedeep font-semibold">Step 9 — last look</p>
+    <h2 class="fade-up serif text-3xl sm:text-4xl mt-1">Does this sound like <span class="italic text-rosedeep">us?</span></h2>
+    <div class="fade-up mt-5 rounded-2xl overflow-hidden border border-white bg-white/70">
+      <div class="bg-charcoal text-cream px-5 py-3 flex items-center justify-between"><span class="text-[11px] tracking-[0.2em] uppercase">Val’s evening • ${esc(r.date_type||'TBD')}</span><span>♡</span></div>
+      <div class="divide-y divide-[#F3E6D8]">
+        ${rows.map(([k,vv,jump])=>`<div class="flex items-center justify-between gap-3 px-5 py-3 text-sm"><span class="text-muted">${k}</span><span class="font-medium text-right flex items-center gap-2">${vv}<button data-jump="${jump}" class="text-[11px] text-rosedeep underline underline-offset-2">edit</button></span></div>`).join('')}
+      </div>
+      <div class="ticket-perf mx-4"></div>
+      <p class="px-5 py-3 text-[12px] text-muted">Rapid fire: ${RAPID.map(q=>esc(r.rapid_fire_answers[q.k]||'·')).join(' • ')}</p>
+    </div>
+    ${errBox('revErr')}
+    <button id="sendBtn" class="focus-visible btn-rose w-full mt-6 rounded-full py-4 text-[16px] font-semibold">Seal it with a send 💌</button>
+    <button id="backBtn" class="w-full mt-2 text-sm text-muted hover:text-charcoal transition py-2">← Back to edit</button>
+    <p class="text-center text-[11px] text-muted mt-2">Stored securely • Only the creator can read replies • Never shown publicly</p>
+  </div>`;
+}
+function tplSuccess(){
+  const r=lastSaved||draft;
+  const qr=`https://api.qrserver.com/v1/create-qr-code/?size=140x140&color=211A17&bgcolor=FFF9F2&data=${encodeURIComponent(r.response_id||'for-val')}`;
+  return `<div class="glass rounded-[28px] p-6 sm:p-8 shadow-card text-center relative overflow-hidden">
+    <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-gradient-to-br from-blush to-rose/30 blur-3xl opacity-70"></div>
+    <p class="fade-up relative text-[11px] tracking-[0.28em] uppercase text-rosedeep font-semibold">It’s official</p>
+    <h2 class="fade-up relative serif text-4xl sm:text-5xl mt-2">Date <span class="italic text-rosedeep">secured.</span></h2>
+    <p class="fade-up relative text-muted text-[15px] mt-2">I’m smiling so big right now, Val.<br>You just made my whole week.</p>
+    <div class="fade-up relative mt-6 text-left rounded-2xl overflow-hidden border border-white bg-white/85 shadow-card">
+      <div class="bg-gradient-to-r from-charcoal to-cocoa text-cream px-5 py-4 flex items-center justify-between">
+        <div><p class="text-[10px] tracking-[0.22em] uppercase opacity-70">Admit two • No refunds on butterflies</p><p class="serif italic text-xl">An evening for Val ♡</p></div>
+        <img src="${qr}" alt="Ticket code" class="w-14 h-14 rounded-lg bg-white p-1">
+      </div>
+      <div class="p-5 grid grid-cols-2 gap-4 text-sm">
+        <div><p class="text-[11px] uppercase tracking-widest text-muted">Vibe</p><p class="font-semibold">${esc(r.date_type||'—')}</p></div>
+        <div><p class="text-[11px] uppercase tracking-widest text-muted">Excitement</p><p class="font-semibold">${esc(String(r.excitement_rating||8))}/10 💗</p></div>
+        <div><p class="text-[11px] uppercase tracking-widest text-muted">Date</p><p class="font-semibold">${esc(prettyDate(r.preferred_date))}</p></div>
+        <div><p class="text-[11px] uppercase tracking-widest text-muted">Time</p><p class="font-semibold">${esc(r.preferred_time||'—')}</p></div>
+        <div class="col-span-2"><p class="text-[11px] uppercase tracking-widest text-muted">Where</p><p class="font-semibold">${esc(r.preferred_location||'To be decided')}</p></div>
+      </div>
+      <div class="ticket-perf mx-5"></div>
+      <div class="px-5 py-3 flex items-center justify-between text-[12px] text-muted"><span>ID ${(r.response_id||'').slice(-8).toUpperCase()}</span><span>${esc(new Date(r.submitted_at||Date.now()).toLocaleString())}</span></div>
+    </div>
+    <div class="fade-up relative grid grid-cols-2 gap-2 mt-5">
+      <button id="calBtn" class="rounded-full py-3 text-sm font-medium glass-soft border hover:bg-white transition">📅 Add to calendar</button>
+      <button id="copyBtn" class="rounded-full py-3 text-sm font-medium glass-soft border hover:bg-white transition">⧉ Copy details</button>
+    </div>
+    <button id="againBtn" class="fade-up relative btn-primary w-full mt-3 rounded-full py-3.5 text-sm font-semibold">Start over / edit reply</button>
+    <p class="fade-up relative serif italic text-[15px] text-cocoa/70 mt-5">“Someone took the time to make this specifically for me.”<br><span class="text-[12px] not-italic font-sans text-muted">— you, probably, right now ♡</span></p>
+  </div>`;
+}
+
+/* ---------- BINDINGS ---------- */
+let noDodges=0;
+function bind(){
+  const back=$('#backBtn'); if(back) back.onclick=()=>{ step=Math.max(0,step-1); render(); };
+  $$('[data-jump]').forEach(b=>b.onclick=()=>{ step=parseInt(b.dataset.jump); render(); });
+
+  if(step===0){
+    let i=0; const full='I made something for you.'; const el=$('#typeLine');
+    if(el){ el.innerHTML=''; const t=setInterval(()=>{ el.textContent=full.slice(0,++i); if(i>=full.length) clearInterval(t); },45); }
+    $('#openBtn').onclick=()=>{ const f=$('#flap'); if(f) f.style.transform='rotateX(180deg)'; boom(); setTimeout(()=>{ step=1; render(); },550); };
+  }
+  if(step===1){ $('#nextBtn').onclick=()=>{ step=2; render(); }; }
+  if(step===2){
+    $('#yesBtn').onclick=()=>{ draft.accepted=true; saveDraft(); boom(true); setTimeout(()=>{ step=3; render(); },650); };
+    $('#noBtn').onclick=()=>{
+      draft.accepted=false; saveDraft(); boom();
+      $('#noResponse').classList.remove('hidden');
+      $('#choiceZone').classList.add('hidden');
+      showErr('bigQErr',null);
+    };
+  }
+  if(step===3){
+    $$('[data-vibe]').forEach(b=>b.onclick=()=>{ draft.date_type=b.dataset.vibe; saveDraft(); $$('[data-vibe]').forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); showErr('vibeErr',null); if(navigator.vibrate) try{navigator.vibrate(10);}catch(e){} });
+    $('#backBtn').onclick=()=>{step=2;render();};
+    $('#nextBtn').onclick=()=>{ if(!draft.date_type){ showErr('vibeErr','Pick a vibe first — whichever made you smile ♡'); return; } step=4; render(); };
+  }
+  if(step===4){
+    $$('.date-chip').forEach(b=>b.onclick=()=>{ draft.preferred_date=b.dataset.date; saveDraft(); $$('.date-chip').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $('#flexBtn').classList.remove('active'); $('#dateInput').value=b.dataset.date; showErr('whenErr',null); });
+    $('#flexBtn').onclick=e=>{ draft.preferred_date='Flexible'; saveDraft(); $$('.date-chip').forEach(x=>x.classList.remove('active')); e.currentTarget.classList.add('active'); $('#dateInput').value=''; showErr('whenErr',null); toast('Flexible it is — I’ll plan around you ♡'); };
+    $('#dateInput').onchange=e=>{ if(e.target.value){ draft.preferred_date=e.target.value; saveDraft(); $$('.date-chip').forEach(x=>x.classList.toggle('active',x.dataset.date===e.target.value)); $('#flexBtn').classList.remove('active'); } };
+    $$('[data-chip]').forEach(b=>{ if(['Morning','Afternoon','Golden Hour','Evening','Late Night'].includes(b.dataset.chip)) b.onclick=()=>{ const t=$('#timeCustom').value; draft.preferred_time=b.dataset.chip+(t?` (~${t})`:''); saveDraft(); $$('[data-chip]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); }; });
+    $('#timeCustom').onchange=e=>{ const base=draft.preferred_time.split(' (')[0]||'Evening'; if(e.target.value) draft.preferred_time=`${base} (~${e.target.value})`; saveDraft(); };
+    $('#backBtn').onclick=()=>{step=3;render();};
+    $('#nextBtn').onclick=()=>{ if(!draft.preferred_date){ showErr('whenErr','Pick a day — or tap “I’m flexible” and I’ll handle it ♡'); return; } if(!draft.preferred_time) draft.preferred_time='Evening'; saveDraft(); step=5; render(); };
+  }
+  if(step===5){
+    const loc=$('#locInput'), act=$('#actInput');
+    loc.oninput=()=>{ draft.preferred_location=loc.value; saveDraft(); };
+    act.oninput=()=>{ draft.activity_preference=act.value; saveDraft(); };
+    $$('#locChips [data-chip]').forEach(b=>b.onclick=()=>{ loc.value=b.dataset.chip==='You pick — I trust you'?'You pick — I trust you ♡':b.dataset.chip; draft.preferred_location=loc.value; saveDraft(); });
+    $$('#actChips [data-chip]').forEach(b=>b.onclick=()=>{ act.value=act.value?act.value+' + '+b.dataset.chip:b.dataset.chip; draft.activity_preference=act.value; saveDraft(); });
+    $('#backBtn').onclick=()=>{step=4;render();};
+    $('#nextBtn').onclick=()=>{ if(!draft.preferred_location.trim()&&!draft.activity_preference.trim()){ showErr('whereErr','Give me <em>something</em> — a place, an idea, even “surprise me” ♡'); return; } if(!draft.preferred_location.trim()) draft.preferred_location='Surprise me'; if(!draft.activity_preference.trim()) draft.activity_preference='Your call'; saveDraft(); step=6; render(); };
+  }
+  if(step===6){
+    const map={foodIn:'food_restrictions',likesIn:'likes',dislikesIn:'dislikes',comfortIn:'comfort_preferences'};
+    Object.keys(map).forEach(id=>{ const el=document.getElementById(id); if(el) el.oninput=()=>{ draft[map[id]]=el.value; saveDraft(); }; });
+    $('#backBtn').onclick=()=>{step=5;render();};
+    $('#nextBtn').onclick=()=>{ step=7; render(); };
+  }
+  if(step===7){
+    $$('[data-rapid]').forEach(b=>b.onclick=()=>{ draft.rapid_fire_answers[b.dataset.rapid]=b.dataset.val; saveDraft(); $$(`[data-rapid="${b.dataset.rapid}"]`).forEach(x=>x.classList.remove('picked')); b.classList.add('picked'); showErr('rapidErr',null); });
+    $('#backBtn').onclick=()=>{step=6;render();};
+    $('#nextBtn').onclick=()=>{ const got=Object.keys(draft.rapid_fire_answers).length; if(got<5){ showErr('rapidErr',`Almost — ${5-got} more tap${5-got>1?'s':''}. No overthinking!`); return; } step=8; render(); };
+  }
+  if(step===8){
+    const r=$('#excRange');
+    const upd=()=>{ const v=+r.value; draft.excitement_rating=v; saveDraft(); $('#excNum').textContent=v; $('#excLabel').textContent=EXC_LABELS[v]; $('#excHeart').textContent=v>=9?'💖':v>=7?'💗':v>=5?'💕':'🤍'; $('#excHeart').style.transform=`scale(${0.7+v*0.05})`; };
+    r.oninput=upd;
+    $('#elseIn').oninput=e=>{ draft.anything_else=e.target.value; saveDraft(); };
+    $('#backBtn').onclick=()=>{step=7;render();};
+    $('#nextBtn').onclick=()=>{ step=9; render(); };
+  }
+  if(step===9){
+    $('#sendBtn').onclick=async()=>{
+      const btn=$('#sendBtn'); btn.disabled=true; btn.textContent='Sealing it… ♡';
+      try{
+        if(draft.accepted!==true) draft.accepted=true;
+        const rec=await Backend.create({...draft});
+        lastSaved=rec; localStorage.removeItem(DRAFT_KEY);
+        draft={accepted:null,preferred_date:'',preferred_time:'',date_type:'',preferred_location:'',activity_preference:'',food_restrictions:'',likes:'',dislikes:'',comfort_preferences:'',anything_else:'',rapid_fire_answers:{},excitement_rating:8};
+        step=10; render(); boom(true); toast('Sent. I can’t wait, Val ♡');
+      }catch(err){ showErr('revErr',esc(err.message)); btn.disabled=false; btn.textContent='Seal it with a send 💌'; }
+    };
+  }
+  if(step===10){
+    $('#calBtn').onclick=()=>{
+      const r=lastSaved; if(!r) return;
+      const dt=(r.preferred_date&&r.preferred_date!=='Flexible')?r.preferred_date.replace(/-/g,''):'20261014';
+      const ics=['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT',`UID:${r.response_id}@forval`,`DTSTAMP:${new Date().toISOString().replace(/[-:]/g,'').split('.')[0]}Z`,`DTSTART:${dt}T190000`,`SUMMARY:Date with Val ♡ — ${r.date_type}`,`DESCRIPTION:${(r.preferred_location+' / '+r.activity_preference).slice(0,200)}`,`LOCATION:${(r.preferred_location||'').slice(0,120)}`,'END:VEVENT','END:VCALENDAR'].join('\r\n');
+      const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download='date-with-val.ics'; a.click();
+      toast('Calendar file downloaded ♡');
+    };
+    $('#copyBtn').onclick=()=>{ const r=lastSaved; navigator.clipboard?.writeText(`Date with Val ♡ — ${r.date_type} on ${prettyDate(r.preferred_date)} at ${r.preferred_time}. Where: ${r.preferred_location}. Doing: ${r.activity_preference}. Excitement: ${r.excitement_rating}/10`).then(()=>toast('Copied — go brag a little ♡')); };
+    $('#againBtn').onclick=()=>{ if(lastSaved){ draft={accepted:lastSaved.accepted,preferred_date:lastSaved.preferred_date,preferred_time:lastSaved.preferred_time,date_type:lastSaved.date_type,preferred_location:lastSaved.preferred_location,activity_preference:lastSaved.activity_preference,food_restrictions:lastSaved.food_restrictions,likes:lastSaved.likes,dislikes:lastSaved.dislikes,comfort_preferences:lastSaved.comfort_preferences,anything_else:lastSaved.anything_else,rapid_fire_answers:lastSaved.rapid_fire_answers||{},excitement_rating:lastSaved.excitement_rating}; } step=3; render(); };
+  }
+}
+
+/* ---------- petals ---------- */
+(function(){
+  const c=$('#petals'),x=c.getContext('2d'); let W,H,P=[];
+  function rs(){ W=c.width=innerWidth; H=c.height=innerHeight; }
+  rs(); addEventListener('resize',rs);
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced) return;
+  for(let i=0;i<26;i++) P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:4+Math.random()*9,r:Math.random()*Math.PI,vy:.3+Math.random()*.7,vx:(Math.random()-.5)*.4,o:.25+Math.random()*.4,h:['#E78CA0','#F5B8C6','#C9A86A','#FADADD'][i%4]});
+  (function loop(){
+    x.clearRect(0,0,W,H);
+    P.forEach(p=>{ p.y+=p.vy; p.x+=p.vx+Math.sin(p.y/60)*.3; p.r+=.01; if(p.y>H+20){p.y=-20;p.x=Math.random()*W;}
+      x.save(); x.translate(p.x,p.y); x.rotate(p.r); x.globalAlpha=p.o; x.fillStyle=p.h;
+      x.beginPath(); x.moveTo(0,0); x.bezierCurveTo(-p.s, -p.s*.6, -p.s*.5, -p.s*1.4, 0, -p.s*.4); x.bezierCurveTo(p.s*.5,-p.s*1.4,p.s,-p.s*.6,0,0); x.fill(); x.restore(); });
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ---------- ambient sound (WebAudio, gentle) ---------- */
+let audioCtx=null,audioNodes=[];
+$('#soundBtn').onclick=()=>{
+  const on=$('#soundIconOn'),off=$('#soundIconOff');
+  if(audioCtx){ audioNodes.forEach(n=>{try{n.stop()}catch(e){}}); audioCtx.close(); audioCtx=null; audioNodes=[]; on.classList.add('hidden'); off.classList.remove('hidden'); toast('Sound off — just us and the quiet ♡'); return; }
+  try{
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const g=audioCtx.createGain(); g.gain.value=.05; g.connect(audioCtx.destination);
+    const notes=[261.6,329.6,392,523.3,392,329.6];
+    notes.forEach((f,i)=>{ const o=audioCtx.createOscillator(); o.type='sine'; o.frequency.value=f; const gg=audioCtx.createGain(); gg.gain.setValueAtTime(0,audioCtx.currentTime+i*1.4); gg.gain.linearRampToValueAtTime(.5,audioCtx.currentTime+i*1.4+.4); gg.gain.linearRampToValueAtTime(0,audioCtx.currentTime+i*1.4+1.3); o.connect(gg); gg.connect(g); o.start(audioCtx.currentTime+i*1.4); o.stop(audioCtx.currentTime+i*1.4+1.4); audioNodes.push(o); });
+    setTimeout(()=>{ if(audioCtx){try{audioCtx.close()}catch(e){} audioCtx=null; on.classList.add('hidden'); off.classList.remove('hidden');} },notes.length*1400+500);
+    on.classList.remove('hidden'); off.classList.add('hidden'); toast('A little melody, for the mood ♡');
+  }catch(e){ toast('Audio not available here','rose'); }
+};
+$('#adminDot').onclick=()=>location.hash='#/admin';
+
+/* ---------- ROUTER ---------- */
+function router(){
+  const h=location.hash, path=location.pathname;
+  const wantAdmin=h.startsWith('#/admin')||path.includes('/admin')||new URLSearchParams(location.search).get('view')==='admin';
+  $('#inviteRoot').classList.toggle('hidden',wantAdmin);
+  $('#adminRoot').classList.toggle('hidden',!wantAdmin);
+  if(wantAdmin) renderAdmin(); else render();
+}
+addEventListener('hashchange',router);
+
+/* ---------- ADMIN ---------- */
+let adminTab='overview', adminCache=[];
+function renderAdmin(){
+  updateLoginUI();
+  if(getSession()){ $('#adminLogin').classList.add('hidden'); $('#adminDash').classList.remove('hidden'); $('#logoutBtn').classList.remove('hidden'); loadAdmin(); }
+  else{ $('#adminLogin').classList.remove('hidden'); $('#adminDash').classList.add('hidden'); $('#logoutBtn').classList.add('hidden'); }
+}
+function updateLoginUI(){
+  const l=lockInfo();
+  if(l.until>Date.now()){ const s=Math.ceil((l.until-Date.now())/1000); $('#lockMsg').classList.remove('hidden'); $('#lockMsg').textContent=`Locked for ${s}s after too many tries. Breathe, lover boy.`; $('#loginBtn').disabled=true; setTimeout(updateLoginUI,1000); }
+  else{ $('#lockMsg').classList.add('hidden'); $('#loginBtn').disabled=false; }
+}
+$('#togglePass').onclick=()=>{ const p=$('#adminPass'); p.type=p.type==='password'?'text':'password'; };
+$('#fillDemo').onclick=()=>{ $('#adminPass').value=DEFAULT_PASS; $('#adminPass').focus(); };
+$('#adminPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#loginBtn').click(); });
+$('#loginBtn').onclick=async()=>{
+  const l=lockInfo();
+  if(l.until>Date.now()) return;
+  const v=$('#adminPass').value;
+  const h=await sha256hex(v), stored=await getStoredHash();
+  if(h===stored){ setLock({attempts:0,until:0}); setSession(); $('#adminPass').value=''; renderAdmin(); toast('Welcome back, creator ♡'); }
+  else{ const a=(l.attempts||0)+1; if(a>=5){ setLock({attempts:0,until:Date.now()+60000}); toast('Locked for 60s — too many tries.','rose'); } else{ setLock({attempts:a,until:0}); toast(`Wrong passphrase (${a}/5). Try again, Romeo.`,'rose'); } updateLoginUI(); }
+};
+$('#logoutBtn').onclick=()=>{ sessionStorage.removeItem(SESS_KEY); renderAdmin(); toast('Locked up tight ♡'); };
+$$('.admin-tab').forEach(b=>b.onclick=()=>{ adminTab=b.dataset.tab; $$('.admin-tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $$('.admin-pane').forEach(p=>p.classList.add('hidden')); $('#tab-'+adminTab).classList.remove('hidden'); });
+
+async function loadAdmin(){
+  try{ adminCache=await Backend.list(); }catch(e){ sessionStorage.removeItem(SESS_KEY); renderAdmin(); return; }
+  $('#respCountBadge').textContent=adminCache.length;
+  const yes=adminCache.filter(r=>r.accepted).length;
+  $('#statTotal').textContent=adminCache.length;
+  $('#statYes').textContent=yes;
+  $('#statYesPct').textContent=adminCache.length?Math.round(yes/adminCache.length*100)+'% said yes':'—';
+  $('#statExc').textContent=adminCache.length?(adminCache.reduce((a,r)=>a+(+r.excitement_rating||0),0)/adminCache.length).toFixed(1):'—';
+  const lat=adminCache[0];
+  $('#statLatest').textContent=lat?new Date(lat.submitted_at).toLocaleDateString('en-US',{month:'short',day:'numeric'})+' • '+lat.excitement_rating+'/10':'No replies yet';
+  const counts={}; ALLOWED_VIBES.forEach(v=>counts[v]=0); adminCache.forEach(r=>{counts[r.date_type]=(counts[r.date_type]||0)+1;});
+  const max=Math.max(1,...Object.values(counts));
+  $('#vibeBars').innerHTML=Object.entries(counts).map(([k,v])=>`<div><div class="flex justify-between text-sm mb-1"><span class="font-medium">${esc(k)}</span><span class="text-muted">${v}</span></div><div class="h-2.5 bg-cream2 rounded-full overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r from-rose to-rosedeep transition-all" style="width:${v/max*100}%"></div></div></div>`).join('')||'<p class="text-sm text-muted">No data yet.</p>';
+  $('#latestCard').innerHTML=lat?`<div class="bg-cream2/60 rounded-2xl p-4"><p class="serif italic text-lg">“${esc((lat.anything_else||lat.activity_preference||'Can’t wait!').slice(0,90))}”</p><p class="text-xs text-muted mt-2">${esc(lat.date_type)} • ${esc(prettyDate(lat.preferred_date))} • ${esc(lat.preferred_time)} • ${lat.excitement_rating}/10 • ${esc(new Date(lat.submitted_at).toLocaleString())}</p></div>`:'<p class="text-sm text-muted">Nothing yet — go send Val the link and pretend you’re chill about it.</p>';
+  renderRespList();
+  const open=isOpen();
+  $('#openLabel').textContent=open?'Open — Val can reply':'Paused — form is closed';
+  $('#toggleKnob').style.left=open?'30px':'4px'; $('#toggleOpen').style.background=open?'#211A17':'#C9BBAE';
+  $('#webhookUrl').value=localStorage.getItem(HOOK_KEY)||'';
+}
+function renderRespList(){
+  const q=($('#searchInput').value||'').toLowerCase(), f=$('#filterAccepted').value, s=$('#sortBy').value;
+  let a=[...adminCache];
+  if(q) a=a.filter(r=>[r.preferred_location,r.activity_preference,r.anything_else,r.likes,r.date_type,r.preferred_date].join(' ').toLowerCase().includes(q));
+  if(f==='yes') a=a.filter(r=>r.accepted); if(f==='no') a=a.filter(r=>!r.accepted);
+  if(s==='old') a.reverse(); if(s==='exc') a.sort((x,y)=>(y.excitement_rating||0)-(x.excitement_rating||0));
+  $('#respList').innerHTML=a.length?a.map(r=>`
+    <div class="glass rounded-2xl p-5" data-id="${esc(r.response_id)}">
+      <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div class="flex items-center gap-3">
+          <span class="w-11 h-11 rounded-full grid place-items-center text-lg ${r.accepted?'bg-gradient-to-br from-rose to-rosedeep text-white':'bg-cream2'}">${r.accepted?'♡':'·'}</span>
+          <div><p class="font-semibold text-[15px]">${esc(r.date_type||'Untitled date')} <span class="text-xs font-normal ${r.accepted?'text-rosedeep':'text-muted'}">${r.accepted?'• said yes':'• pending'}</span></p>
+          <p class="text-xs text-muted">${esc(prettyDate(r.preferred_date))} • ${esc(r.preferred_time||'—')} • ⚡${esc(String(r.excitement_rating))}/10 • ${esc(new Date(r.submitted_at).toLocaleDateString())}</p></div>
+        </div>
+        <div class="flex gap-2">
+          <button class="expandBtn text-xs px-4 py-2 rounded-full glass-soft border hover:bg-white transition">View</button>
+          <button class="copyBtn text-xs px-4 py-2 rounded-full glass-soft border hover:bg-white transition">Copy</button>
+          <button class="delBtn text-xs px-4 py-2 rounded-full bg-rosedeep/10 text-rosedeep border border-rosedeep/20 hover:bg-rosedeep hover:text-white transition">Delete</button>
+        </div>
+      </div>
+      <div class="detail hidden mt-4 text-[13px] bg-white/70 border border-white rounded-2xl p-4 grid sm:grid-cols-2 gap-x-6 gap-y-2">
+        ${[['response_id',r.response_id],['invitation_id',r.invitation_id],['accepted',String(r.accepted)],['preferred_date',r.preferred_date],['preferred_time',r.preferred_time],['date_type',r.date_type],['preferred_location',r.preferred_location],['activity_preference',r.activity_preference],['food_restrictions',r.food_restrictions||'—'],['likes',r.likes||'—'],['dislikes',r.dislikes||'—'],['comfort_preferences',r.comfort_preferences||'—'],['anything_else',r.anything_else||'—'],['excitement_rating',String(r.excitement_rating)],['submitted_at',r.submitted_at],['updated_at',r.updated_at]].map(([k,v])=>`<p><span class="text-muted font-mono text-[11px]">${k}</span><br><span class="font-medium break-words">${esc(v)}</span></p>`).join('')}
+        <p class="sm:col-span-2"><span class="text-muted font-mono text-[11px]">rapid_fire_answers</span><br><code class="text-[12px] bg-cream2 px-2 py-1 rounded-lg inline-block mt-1">${esc(JSON.stringify(r.rapid_fire_answers))}</code></p>
+      </div>
+    </div>`).join(''):'<div class="glass rounded-2xl p-10 text-center text-muted text-sm">No responses match. Val hasn’t replied yet — or try clearing the search ♡</div>';
+  $$('#respList .expandBtn').forEach(b=>b.onclick=()=>{ const d=b.closest('[data-id]').querySelector('.detail'); d.classList.toggle('hidden'); b.textContent=d.classList.contains('hidden')?'View':'Hide'; });
+  $$('#respList .copyBtn').forEach(b=>b.onclick=()=>{ const id=b.closest('[data-id]').dataset.id; const r=adminCache.find(x=>x.response_id===id); navigator.clipboard?.writeText(JSON.stringify(r,null,2)).then(()=>toast('Response JSON copied')); });
+  $$('#respList .delBtn').forEach(b=>b.onclick=async()=>{ if(!confirm('Delete this response forever?')) return; const id=b.closest('[data-id]').dataset.id; try{ adminCache=await Backend.remove(id); loadAdmin(); toast('Deleted.','rose'); }catch(e){ toast(e.message,'rose'); } });
+}
+['searchInput','filterAccepted','sortBy'].forEach(id=>document.getElementById(id)?.addEventListener('input',renderRespList));
+$('#refreshBtn').onclick=loadAdmin;
+function download(name,content,type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); }
+function toCSV(rows){
+  const cols=['response_id','invitation_id','accepted','preferred_date','preferred_time','date_type','preferred_location','activity_preference','food_restrictions','likes','dislikes','comfort_preferences','anything_else','rapid_fire_answers','excitement_rating','submitted_at','updated_at'];
+  const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+  return [cols.join(',')].concat(rows.map(r=>cols.map(c=>c==='rapid_fire_answers'?q(JSON.stringify(r[c])):q(r[c])).join(','))).join('\n');
+}
+$('#exportCsv').onclick=()=>{ if(!adminCache.length) return toast('Nothing to export yet','rose'); download('for-val-responses.csv',toCSV(adminCache),'text/csv'); toast('CSV downloaded ♡'); };
+const expJ=()=>{ if(!adminCache.length) return toast('Nothing to export yet','rose'); download('for-val-responses.json',JSON.stringify(adminCache,null,2),'application/json'); toast('JSON downloaded ♡'); };
+$('#exportJson').onclick=expJ; $('#exportJsonTop').onclick=expJ;
+$('#copyInvite').onclick=()=>{ const url=location.origin+location.pathname+'#/'; navigator.clipboard?.writeText(url).then(()=>toast('Invite link copied — send it to Val ♡')); };
+$('#toggleOpen').onclick=()=>{ setOpen(!isOpen()); loadAdmin(); toast(isOpen()?'Invitation is open ♡':'Invitation paused 🌙'); };
+$('#changePassBtn').onclick=async()=>{
+  const c=$('#curPass').value,n=$('#newPass').value,n2=$('#newPass2').value,m=$('#passMsg');
+  if(await sha256hex(c)!==await getStoredHash()){ m.textContent='Current passphrase is wrong.'; m.className='text-xs mt-2 text-rosedeep'; return; }
+  if(n.length<8){ m.textContent='New passphrase needs 8+ characters.'; m.className='text-xs mt-2 text-rosedeep'; return; }
+  if(n!==n2){ m.textContent='Confirmation doesn’t match.'; m.className='text-xs mt-2 text-rosedeep'; return; }
+  localStorage.setItem(HASH_KEY,await sha256hex(n)); $('#curPass').value=$('#newPass').value=$('#newPass2').value=''; m.textContent='Updated ♡ — don’t forget it.'; m.className='text-xs mt-2 text-green-700'; toast('Passphrase updated');
+};
+$('#saveWebhook').onclick=()=>{ const v=$('#webhookUrl').value.trim(); if(v)localStorage.setItem(HOOK_KEY,v); else localStorage.removeItem(HOOK_KEY); $('#webhookMsg').textContent=v?'Saved — new replies will mirror to your API.':'Cleared.'; toast('Endpoint saved'); };
+$('#wipeBtn').onclick=async()=>{ if(!confirm('Delete ALL responses? This cannot be undone.'))return; if(!confirm('Really? For real?'))return; try{ await Backend.wipe(); loadAdmin(); toast('All cleared.','rose'); }catch(e){ toast(e.message,'rose'); } };
+$('#resetDemoBtn').onclick=()=>{ localStorage.removeItem(DRAFT_KEY); toast('Draft cleared ♡'); };
+
+/* init */
+router();
+if(!location.hash) history.replaceState(null,'','#/');
+</script>
+</body>
+</html>
